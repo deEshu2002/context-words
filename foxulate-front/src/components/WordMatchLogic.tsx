@@ -60,7 +60,7 @@ const WordMatchLogic = () => {
             className="
             rounded-md resize-none bg-transparent w-full outline-none p-2 text-lg placeholder:text-black/30 text-neutral-700"
             rows={12}
-            placeholder="hello"
+          placeholder="Start typing here..."
             onFocus={() => {
               dispatch(toggleFocusScenario());
             }}

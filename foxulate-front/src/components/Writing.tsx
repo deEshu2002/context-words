@@ -1,11 +1,44 @@
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch} from "react-redux";
 import { RootState } from "./store";
 import WordMatchLogic from "./WordMatchLogic";
+import { ChangeEvent, useState } from "react";
+import { updateWords } from "./Redux/Words";
 
 const Writing = () => {
-  const focusScenario = useSelector(
+   const focusScenario = useSelector(
     (state: RootState) => state.focusScenario.focusScenarioState
   );
+
+  const [scenario, setScenario] = useState("");
+
+  function handleScenarioChange(e:ChangeEvent<HTMLTextAreaElement>){
+    setScenario(e.target.value);
+  }
+
+  async function postScenario(url="", data={}){
+    const response = await fetch(url, {
+      method: "POST", 
+      mode: "cors", 
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers:{
+        "Content-Type": "application/json",
+      }, 
+      redirect: "follow",
+      referrer: "no-referrer",
+      body: JSON.stringify(data)
+    });
+      const json = await response.json();
+      return json;
+  }
+
+  function submitScenarioChanges(){
+    postScenario("http://localhost:5000/getWordsFromScenario", {scenario:scenario}).then((json) => {
+      useDispatch(updateWords(json))
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
 
   return (
     <>
@@ -17,6 +50,7 @@ const Writing = () => {
                 className="h-5 w-5 fill-current text-slate-700 cursor-pointer hover:scale-110 duration-200"
                 viewBox="0 0 23 23"
                 xmlns="http://www.w3.org/2000/svg"
+                onClick={() => submitScenarioChanges()}
               >
                 <path
                   d="M11.3489 1.06489e-05C9.2285 -0.00289552 7.14984 0.589092 5.34914 1.70869C3.54845 2.82828 2.09795 4.43058 1.16252 6.33345C0.227079 8.23633 -0.155777 10.3635 0.0574629 12.4731C0.270703 14.5827 1.07149 16.5902 2.3688 18.2674C3.6661 19.9446 5.40791 21.2242 7.39622 21.9608C9.38454 22.6974 11.5396 22.8615 13.6165 22.4343C15.6934 22.0071 17.6088 21.0059 19.1451 19.5444C20.6813 18.0829 21.7767 16.2197 22.3068 14.1667H19.3587C18.8392 15.636 17.9257 16.9343 16.7181 17.9195C15.5106 18.9047 14.0553 19.539 12.5116 19.7529C10.9679 19.9668 9.39502 19.7522 7.96503 19.1325C6.53503 18.5128 5.30294 17.5119 4.40344 16.2392C3.50395 14.9665 2.97168 13.4709 2.86483 11.9161C2.75798 10.3613 3.08066 8.807 3.7976 7.42319C4.51453 6.03939 5.59812 4.87933 6.9299 4.06985C8.26168 3.26036 9.79038 2.8326 11.3489 2.83334C12.4636 2.83497 13.5668 3.05882 14.5941 3.49179C15.6213 3.92477 16.5519 4.55819 17.3315 5.35501L12.7726 9.91668H22.6893V1.06489e-05L19.3587 3.32918C18.3092 2.27331 17.0612 1.43555 15.6865 0.864177C14.3118 0.292802 12.8376 -0.000893853 11.3489 1.06489e-05V1.06489e-05Z"
@@ -44,14 +78,13 @@ const Writing = () => {
             <div className="w-full">
               {/* getScenario */}
               <textarea
-                className={`resize-none bg-transparent w-11/12 text-xl ${
+                className={`outline-none resize-none bg-transparent w-11/12 text-xl ${
                   focusScenario
                     ? "placeholder:text-neutral-600/100"
                     : "placeholder:text-neutral-600/60"
                 }`}
-                disabled
-                placeholder="Lorem ipsum dolor sit amet consectetur adipiscing elit Ut et massa mi. Aliquam
-              in hendrerit urna. Pellentesque sit amet sapien."
+                placeholder="Describe your Scenario in which you want to work in."
+                onChange={(e) => handleScenarioChange(e)}
               ></textarea>
             </div>
           </div>

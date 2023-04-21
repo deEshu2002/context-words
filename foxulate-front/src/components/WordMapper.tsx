@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { RootState } from "./store";
+import { useSelector } from "react-redux";
 
 interface props {
   prop: string[];
@@ -12,15 +14,10 @@ const WordMapper = (prop: props) => {
   const [blue, setblue] = useState<boolean>(false);
   const [purple, setpurple] = useState<boolean>(false);
 
-  const words = [
-    "laihflauifalafdfa",
-    "alfhfuiilafsdfs",
-    "faiuliuhgregiegu",
-    "aoifuhilulirggre",
-    "aiufhregherhghg",
-    "aiufiluhfaaiuf",
-    "lafuihdlfualfas",
-  ];
+   const words = useSelector(
+    (state: RootState) => state.changeWords.words
+  );
+ 
 
   const dispatchClass = (idx: number): string => {
     switch (idx) {
