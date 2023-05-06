@@ -1,43 +1,55 @@
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "./store";
 import WordMatchLogic from "./WordMatchLogic";
 import { ChangeEvent, useState } from "react";
 import { updateWords } from "./Redux/Words";
 
 const Writing = () => {
-   const focusScenario = useSelector(
+  const focusScenario = useSelector(
     (state: RootState) => state.focusScenario.focusScenarioState
   );
 
+const changeWords = useSelector(
+    (state: RootState) => state.changeWords.words
+  );
+  const dispatch = useDispatch()
+
   const [scenario, setScenario] = useState("");
 
-  function handleScenarioChange(e:ChangeEvent<HTMLTextAreaElement>){
+  function handleScenarioChange(e: ChangeEvent<HTMLTextAreaElement>) {
     setScenario(e.target.value);
   }
 
-  async function postScenario(url="", data={}){
-    const response = await fetch(url, {
-      method: "POST", 
-      mode: "cors", 
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers:{
-        "Content-Type": "application/json",
-      }, 
-      redirect: "follow",
-      referrer: "no-referrer",
-      body: JSON.stringify(data)
-    });
-      const json = await response.json();
-      return json;
+  function destructure(obj){
+    let words =Object.keys(obj)
+    return words
   }
 
-  function submitScenarioChanges(){
-    postScenario("http://localhost:5000/getWordsFromScenario", {scenario:scenario}).then((json) => {
-      useDispatch(updateWords(json))
-    }).catch((err) => {
-      console.log(err);
+  function submitScenarioChanges() {
+
+    // POST request using fetch()
+    fetch("/api/getwords", {
+
+      // Adding method type
+      method: "POST",
+
+      // Adding body or contents to send
+      body: JSON.stringify({ scenario: scenario }),
+      // mode:"no-cors", 
+      // Adding headers to the request
+      headers: {
+        "Content-type": "application/json",
+      }
     })
+      // Converting to JSON
+      .then(response => response.json())
+      // Displaying results to console
+      .then(json => {
+        console.log(json);
+        const wordsArray = destructure(json);
+        dispatch(updateWords({words:wordsArray}))
+      });
+
   }
 
   return (
@@ -78,11 +90,10 @@ const Writing = () => {
             <div className="w-full">
               {/* getScenario */}
               <textarea
-                className={`outline-none resize-none bg-transparent w-11/12 text-xl ${
-                  focusScenario
+                className={`outline-none resize-none bg-transparent w-11/12 text-xl ${focusScenario
                     ? "placeholder:text-neutral-600/100"
                     : "placeholder:text-neutral-600/60"
-                }`}
+                  }`}
                 placeholder="Describe your Scenario in which you want to work in."
                 onChange={(e) => handleScenarioChange(e)}
               ></textarea>

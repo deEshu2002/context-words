@@ -9,13 +9,14 @@
     "start": "next start"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.5",
     "next": "^13.2.4",
     "next-auth": "^4.21.0",
-    "@reduxjs/toolkit": "^1.8.5",
+    "nextjs-cors": "^2.1.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "zod": "^3.21.4",
-    "react-redux": "^8.0.2"
+    "react-redux": "^8.0.2",
+    "zod": "^3.21.4"
   },
   "devDependencies": {
     "@types/eslint": "^8.21.3",
